@@ -16,8 +16,7 @@ namespace PLC
                 try
                 {
                     var identity = _block.Constants.Single(x => x.Name == name);
-                    ConstantFactor f = new();
-                    f.Value = identity.Value;
+                    ConstantFactor f = new() { Value = identity.Value };
                     return f;
                 }
                 catch
@@ -43,14 +42,17 @@ namespace PLC
             if (factor is ExpressionFactor)
             {
                 var ef = (ExpressionFactor) factor;
-                ef.Expression = OptimizeExpression(ef.Expression, countReferences);
-                // Convert ExpressionFactor to ConstantFactor constant
-                if (ef.Expression.IsSingleConstantFactor)
+                if (ef.Expression != null)
                 {
-                    ExpressionNode firstNode = ef.Expression.ExpressionNodes[0];
-                    if (firstNode.IsPositive)
+                    ef.Expression = OptimizeExpression(ef.Expression, countReferences);
+                    // Convert ExpressionFactor to ConstantFactor constant
+                    if (ef.Expression.IsSingleConstantFactor && ef.Expression.ExpressionNodes.Count > 0)
                     {
-                        return firstNode.Term.FirstFactor;
+                        ExpressionNode? firstNode = ef.Expression.ExpressionNodes[0];
+                        if (firstNode != null && firstNode.IsPositive)
+                        {
+                            return firstNode.Term?.FirstFactor!;
+                        }
                     }
                 }
                 return ef;

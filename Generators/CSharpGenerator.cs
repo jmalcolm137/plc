@@ -1,12 +1,7 @@
-#nullable enable
 using System;
-using System.IO;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Authentication.ExtendedProtection;
 
 namespace PLC
 {

@@ -1,0 +1,15 @@
+/home/jmalcolm/src/plc/bin/Debug/net10.0/plc
+/home/jmalcolm/src/plc/bin/Debug/net10.0/plc.deps.json
+/home/jmalcolm/src/plc/bin/Debug/net10.0/plc.runtimeconfig.json
+/home/jmalcolm/src/plc/bin/Debug/net10.0/plc.dll
+/home/jmalcolm/src/plc/bin/Debug/net10.0/plc.pdb
+/home/jmalcolm/src/plc/obj/Debug/net10.0/plc.GeneratedMSBuildEditorConfig.editorconfig
+/home/jmalcolm/src/plc/obj/Debug/net10.0/plc.AssemblyInfoInputs.cache
+/home/jmalcolm/src/plc/obj/Debug/net10.0/plc.AssemblyInfo.cs
+/home/jmalcolm/src/plc/obj/Debug/net10.0/plc.csproj.CoreCompileInputs.cache
+/home/jmalcolm/src/plc/obj/Debug/net10.0/plc.sourcelink.json
+/home/jmalcolm/src/plc/obj/Debug/net10.0/plc.dll
+/home/jmalcolm/src/plc/obj/Debug/net10.0/refint/plc.dll
+/home/jmalcolm/src/plc/obj/Debug/net10.0/plc.pdb
+/home/jmalcolm/src/plc/obj/Debug/net10.0/plc.genruntimeconfig.cache
+/home/jmalcolm/src/plc/obj/Debug/net10.0/ref/plc.dll

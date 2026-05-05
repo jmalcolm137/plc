@@ -1,4 +1,3 @@
-//#nullable enable
 namespace PLC
 {
     public class ConstantExpression : Expression

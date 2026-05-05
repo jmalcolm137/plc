@@ -1,4 +1,3 @@
-//#nullable enable
 using System;
 using System.Collections.Generic;
 
@@ -25,8 +24,8 @@ namespace PLC
             Globals = new List<Identity>();
         }
 
-        public Block Block;
-        public List<Identity> Globals;
+        public Block Block { get; set; } = new Block();
+        public List<Identity> Globals { get; set; } = new List<Identity>();
         public bool UsesRand = false;
     }
 
@@ -54,18 +53,18 @@ namespace PLC
             Procedures = new List<Procedure>();
         }
 
-        public List<Identity> Constants;
-        public List<Identity> Variables;
-        public List<Procedure> Procedures;
-        public Statement Statement;
+        public List<Identity> Constants { get; set; } = new List<Identity>();
+        public List<Identity> Variables { get; set; } = new List<Identity>();
+        public List<Procedure> Procedures { get; set; } = new List<Procedure>();
+        public Statement? Statement { get; set; }
     }
 
     public class Procedure
     {
-        public string Name = String.Empty;
-        public Block Block;
+        public string Name { get; set; } = String.Empty;
+        public Block? Block { get; set; }
         public int CallCount = 0;
-        public List<Identity> Locals;
+        public List<Identity> Locals { get; set; } = new List<Identity>();
 
         public Procedure()
         {
@@ -98,13 +97,8 @@ namespace PLC
 
     public class AssignmentStatement : Statement
     {
-        public string IdentityName = String.Empty;
-        public Expression Expression;
-
-        public override bool CallsProcedure
-        {
-            get { return false; }
-        }
+        public string IdentityName { get; set; } = String.Empty;
+        public Expression? Expression { get; set; }
     }
 
     public class CallStatement : Statement
@@ -119,14 +113,14 @@ namespace PLC
 
     public class ReadStatement : Statement
     {
-        public string IdentityName = String.Empty;
-        public string Message = String.Empty;
+        public string IdentityName { get; set; } = String.Empty;
+        public string Message { get; set; } = String.Empty;
     }
 
     public class WriteStatement : Statement
     {
-        public Expression Expression;
-        public string Message = String.Empty;
+        public Expression? Expression { get; set; }
+        public string Message { get; set; } = String.Empty;
     }
 
     public class CompoundStatement : Statement
@@ -136,7 +130,7 @@ namespace PLC
             Statements = new List<Statement>();
         }
 
-        public List<Statement> Statements;
+        public List<Statement> Statements { get; set; } = new List<Statement>();
 
         public override bool CallsProcedure
         {
@@ -150,38 +144,40 @@ namespace PLC
             }
         }
     }
+
     public class IfStatement : Statement
     {
-        public Condition Condition;
-        public Statement Statement;
+        public Condition? Condition { get; set; }
+        public Statement? Statement { get; set; }
 
         public override bool CallsProcedure
         {
-            get { return Statement.CallsProcedure; }
+            get { return Statement?.CallsProcedure ?? false; }
         }
     }
+
     public abstract class LoopStatement : Statement
     {
-        public Statement Statement { get; set; }
+        public Statement? Statement { get; set; }
     }
 
     public class WhileStatement : LoopStatement
     {
-        public Condition Condition;
+        public Condition? Condition { get; set; }
 
         public override bool CallsProcedure
         {
-            get { return Statement.CallsProcedure; }
+            get { return Statement?.CallsProcedure ?? false; }
         }
     }
 
     public class DoWhileStatement : LoopStatement
     {
-        public Condition Condition;
+        public Condition? Condition { get; set; }
 
         public override bool CallsProcedure
         {
-            get { return Statement.CallsProcedure; }
+            get { return Statement?.CallsProcedure ?? false; }
         }
     }
 
@@ -192,7 +188,7 @@ namespace PLC
 
     public class OddCondition : Condition
     {
-        public Expression Expression;
+        public Expression? Expression { get; set; }
 
         public OddCondition()
         {
@@ -202,8 +198,8 @@ namespace PLC
 
     public class BinaryCondition : Condition
     {
-        public Expression FirstExpression;
-        public Expression SecondExpression;
+        public Expression? FirstExpression { get; set; }
+        public Expression? SecondExpression { get; set; }
     }
 
     public class TrueCondition : Condition
@@ -229,11 +225,11 @@ namespace PLC
             TermNodes = new List<TermNode>();
         }
 
-        public List<TermNode> TermNodes;
+        public List<TermNode> TermNodes { get; set; } = new List<TermNode>();
 
-        public Factor FirstFactor
+        public Factor? FirstFactor
         {
-            get { return TermNodes[0].Factor; }
+            get { return TermNodes.Count > 0 ? TermNodes[0].Factor : null; }
         }
 
         public bool IsSingleFactor
@@ -257,7 +253,7 @@ namespace PLC
     public class TermNode
     {
         public bool IsDivision;
-        public Factor Factor;
+        public Factor? Factor { get; set; }
 
         public TermNode()
         {
@@ -274,7 +270,7 @@ namespace PLC
         }
 
         public bool IsPositive;
-        public Term Term;
+        public Term? Term { get; set; }
 
         public bool IsSingleConstantFactor
         {
@@ -290,7 +286,7 @@ namespace PLC
 
         public bool RepresentsBinaryExpression
         {
-            get { return Term.TermNodes.Count == 2; }
+            get { return Term?.TermNodes.Count == 2; }
         }
     }
 
@@ -301,7 +297,7 @@ namespace PLC
             ExpressionNodes = new List<ExpressionNode>();
         }
 
-        public List<ExpressionNode> ExpressionNodes;
+        public List<ExpressionNode> ExpressionNodes { get; set; } = new List<ExpressionNode>();
 
         public virtual bool IsSingleTerm
         {
@@ -324,7 +320,7 @@ namespace PLC
             {
                 if (this.IsSingleTerm)
                 {
-                    if (ExpressionNodes[0].Term.IsSingleConstantFactor) return true;
+                    if (ExpressionNodes[0].Term?.IsSingleConstantFactor ?? false) return true;
                 }
                 return false;
             }
@@ -336,7 +332,7 @@ namespace PLC
             {
                 if (this.IsSingleTerm)
                 {
-                    if (ExpressionNodes[0].Term.IsSingleFactor)
+                    if (ExpressionNodes[0].Term?.IsSingleFactor ?? false)
                     {
                         if (ExpressionNodes[0].Term.FirstFactor is IdentityFactor)
                         {
@@ -351,8 +347,8 @@ namespace PLC
 
     public class RandExpression : Expression
     {
-        public Expression LowExpression { get; set; }
-        public Expression HighExpression { get; set; }
+        public Expression? LowExpression { get; set; }
+        public Expression? HighExpression { get; set; }
     }
 
     public abstract class Factor
@@ -361,12 +357,12 @@ namespace PLC
 
     public class IdentityFactor : Factor
     {
-        public string IdentityName = String.Empty;
+        public string IdentityName { get; set; } = String.Empty;
     }
 
     public class ConstantFactor : Factor
     {
-        public string Value = String.Empty;
+        public string Value { get; set; } = String.Empty;
     }
 
     public class ExpressionFactor : Factor
@@ -376,6 +372,6 @@ namespace PLC
             Expression = new Expression();
         }
 
-        public Expression Expression;
+        public Expression? Expression { get; set; }
     }
 }

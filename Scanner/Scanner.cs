@@ -7,12 +7,12 @@ using System.Collections.Generic;
 namespace PLC
 {
     public class Scanner {
-        IEnumerator<char> enumerator;
+        IEnumerator<char>? enumerator;
         char current, next;
 
         bool MoveNext() {
             current = next;
-            next = (enumerator.MoveNext()) ? enumerator.Current : '\0';
+            next = (enumerator!.MoveNext()) ? enumerator.Current : '\0';
             return (current != '\0');
         }
 

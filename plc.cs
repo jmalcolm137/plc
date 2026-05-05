@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 
@@ -13,23 +13,24 @@ namespace PLC
                 Console.WriteLine("Usage: plc inputfile outputfile");
                 return;
             }
-            IEnumerable<Token> tokens = new List<Token>();
             string inFilename = args[0];
-
+ 
             string outFilename;
             if (args.Length > 1)
             {
                 outFilename = args[1];
-                if (Path.GetFileName(outFilename) != outFilename)
-                {
-                    throw new Exception("can only output into current directory!");
-                }
             }
             else
             {
                 outFilename = Path.GetFileNameWithoutExtension(inFilename) + ".exe";
             }
             string extension = Path.GetExtension(outFilename);
+            if (string.IsNullOrEmpty(extension))
+            {
+                // For .NET executables, use .exe extension
+                outFilename = outFilename + ".exe";
+                extension = ".exe";
+            }
             using (var fileStream = new FileStream(inFilename, FileMode.Open)) {
                 ParsedProgram program = new Parser().Parse(new Scanner().Scan(fileStream));
                 program = new Optimizer().Optimize(program);
@@ -54,8 +55,10 @@ namespace PLC
                         generator = new CSharpGenerator(program);
                         break;
                     default:
+                        // For .exe/.dll outputs, use CLRGenerator directly
                         generator = new CLRGenerator(program);
-                        break;
+                        generator.Compile(outFilename);
+                        return;
                 }
                 foreach (string s in generator.Generate()) Console.WriteLine(s);
                 generator.Compile(outFilename);

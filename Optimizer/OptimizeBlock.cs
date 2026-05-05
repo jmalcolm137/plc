@@ -6,7 +6,10 @@ namespace PLC
     {
         Block OptimzeBlock(Block block)
         {
-            block.Statement = OptimizeStatement(block.Statement);
+            if (block.Statement != null)
+            {
+                block.Statement = OptimizeStatement(block.Statement);
+            }
             return block;
         }
     }

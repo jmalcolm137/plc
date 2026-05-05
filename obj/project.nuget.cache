@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "8iLCmKNnK+Y=",
+  "success": true,
+  "projectFilePath": "/home/jmalcolm/src/plc/plc.csproj",
+  "expectedPackageFiles": [
+    "/home/jmalcolm/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.4/microsoft.aspnetcore.app.ref.10.0.4.nupkg.sha512"
+  ],
+  "logs": []
+}

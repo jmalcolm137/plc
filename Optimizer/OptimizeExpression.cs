@@ -8,22 +8,34 @@ namespace PLC
     {
         ExpressionNode OptimizeExpressionNode(ExpressionNode node, bool countReferences = true)
         {
-            node.Term = OptimizeTerm(node.Term);
-            
+            if (node.Term != null)
+            {
+                node.Term = OptimizeTerm(node.Term);
+            }
+
             // Try to get rid of multiplication by negative numbers
             if (node.RepresentsBinaryExpression)
             {
-                Factor secondFactor = node.Term.TermNodes[0].Factor;
+                Factor? secondFactor = node.Term?.TermNodes[0].Factor;
                 if (secondFactor is ExpressionFactor)
                 {
                     ExpressionFactor ef = (ExpressionFactor) secondFactor;
-                    var firstNode = ef.Expression.ExpressionNodes[0];
-                    if (!firstNode.IsPositive) // Is negative
+                    if (ef.Expression != null && ef.Expression.ExpressionNodes.Count > 0)
                     {
-                        firstNode.IsPositive = true;
-                        node.IsPositive = !node.IsPositive;
-                        ef.Expression = OptimizeExpression(ef.Expression);
-                        node.Term = OptimizeTerm(node.Term);
+                        var firstNode = ef.Expression.ExpressionNodes[0];
+                        if (!firstNode.IsPositive) // Is negative
+                        {
+                            firstNode.IsPositive = true;
+                            node.IsPositive = !node.IsPositive;
+                            if (ef.Expression != null)
+                            {
+                                ef.Expression = OptimizeExpression(ef.Expression);
+                            }
+                            if (node.Term != null)
+                            {
+                                node.Term = OptimizeTerm(node.Term);
+                            }
+                        }
                     }
                 }
             }
@@ -44,17 +56,20 @@ namespace PLC
             foreach (var n in expression.ExpressionNodes)
             {
                 var node = OptimizeExpressionNode(n);
-                if (node.Term.IsSingleConstantFactor)
+                if (node.Term?.IsSingleConstantFactor ?? false)
                 {
-                    ConstantFactor firstFactor = (ConstantFactor) node.Term.TermNodes[0].Factor;
-                    int termValue = Int32.Parse(firstFactor.Value);
-                    if (node.IsPositive)
+                    ConstantFactor? firstFactor = (node.Term?.TermNodes[0].Factor as ConstantFactor);
+                    if (firstFactor != null)
                     {
-                        constantResult += termValue;
-                    }
-                    else
-                    {
-                        constantResult -= termValue;
+                        int termValue = Int32.Parse(firstFactor.Value);
+                        if (node.IsPositive)
+                        {
+                            constantResult += termValue;
+                        }
+                        else
+                        {
+                            constantResult -= termValue;
+                        }
                     }
                 }
                 else
