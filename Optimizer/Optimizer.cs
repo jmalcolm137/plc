@@ -24,11 +24,11 @@ namespace PLC
             foreach (var proc in _block.Procedures)
             {
                 _inMain = false;
-                proc.Block = OptimzeBlock(proc.Block);
-                OptimzeProcedureTailCall(proc);
+                proc.Block = OptimizeBlock(proc.Block);
+                OptimizeProcedureTailCall(proc);
             }
             
-            _block = OptimzeBlock(_block);
+            _block = OptimizeBlock(_block);
 
             foreach (var proc in _block.Procedures)
             {
@@ -46,11 +46,11 @@ namespace PLC
             foreach (var proc in _block.Procedures)
             {
                 _inMain = false;
-                proc.Block = OptimzeBlock(proc.Block);
-                OptimzeProcedureTailCall(proc);
+                proc.Block = OptimizeBlock(proc.Block);
+                OptimizeProcedureTailCall(proc);
             }
             _inMain = false;
-            _block = OptimzeBlock(_block);
+            _block = OptimizeBlock(_block);
             //PrintReferences();
             foreach (var variable in _block.Variables)
             {
@@ -102,7 +102,7 @@ namespace PLC
         }
         
         // Convert procedure call into a loop for a very specific case
-        void OptimzeProcedureTailCall(Procedure proc)
+        void OptimizeProcedureTailCall(Procedure proc)
         {
             if (proc.Block.Statement is IfStatement)
             {

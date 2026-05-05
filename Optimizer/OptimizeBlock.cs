@@ -4,7 +4,7 @@ namespace PLC
 {
     public partial class Optimizer
     {
-        Block OptimzeBlock(Block block)
+        Block OptimizeBlock(Block block)
         {
             if (block.Statement != null)
             {
