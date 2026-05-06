@@ -56,16 +56,24 @@ namespace PLC
                 switch (current) {
                     case '"':
                         token.Type = TokenType.StringConstant;
-                        while ((next != '"') && MoveNext()) {
+                        bool stringTerminated = false;
+                        while (next != '\0' && (next != '"' || current == '\\') && MoveNext()) {
                             if (current == '\\' && next == '"') {
+                                tb.Append('"');
+                                MoveNext(); // Skip the '"'
+                            } else {
                                 tb.Append(current);
-                                MoveNext();
                             }
-                            tb.Append(current);
+                        }
+                        if (next == '"') {
+                            stringTerminated = true;
+                            MoveNext(); // Skip the closing '"'
                         }
                         token.Text = tb.ToString();
                         tb.Clear();
-                        MoveNext(); // Skip the '"'
+                        if (!stringTerminated) {
+                            throw new Exception("Unterminated string literal at line " + token.LineNumber);
+                        }
                         yield return token;
                         break;
                     case ' ':
