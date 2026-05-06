@@ -208,7 +208,11 @@ namespace PLC
                         {
                             if (a.IdentityName == identityFactor.IdentityName && a.Expression.IsSingleConstantFactor)
                             {
-                                tnode.Factor = a.Expression.ExpressionNodes[0].Term.FirstFactor;
+                                if (a.Expression.ExpressionNodes.Count > 0 &&
+                                    a.Expression.ExpressionNodes[0].Term?.FirstFactor != null)
+                                {
+                                    tnode.Factor = a.Expression.ExpressionNodes[0].Term.FirstFactor;
+                                }
                                 try
                                 {
                                     Identity identity =
@@ -317,21 +321,21 @@ namespace PLC
                         for (int c = constantAssignments.Count - 1; c >= 0; c--)
                         {
                             AssignmentStatement currentAssignment = constantAssignments[c];
-                            if (bc2.FirstExpression.IsSingleIdentity)
+                            if (bc2.FirstExpression.IsSingleIdentity &&
+                                bc2.FirstExpression.ExpressionNodes.Count > 0 &&
+                                bc2.FirstExpression.ExpressionNodes[0].Term?.FirstFactor is IdentityFactor identityFactor)
                             {
-                                IdentityFactor identityFactor =
-                                    (IdentityFactor) bc2.FirstExpression.ExpressionNodes[0].Term.FirstFactor;
                                 if (currentAssignment.IdentityName == identityFactor.IdentityName)
                                 {
                                     bc2.FirstExpression = currentAssignment.Expression;
                                 }
                             }
 
-                            if (bc2.SecondExpression.IsSingleIdentity)
+                            if (bc2.SecondExpression.IsSingleIdentity &&
+                                bc2.SecondExpression.ExpressionNodes.Count > 0 &&
+                                bc2.SecondExpression.ExpressionNodes[0].Term?.FirstFactor is IdentityFactor secondIdentityFactor)
                             {
-                                IdentityFactor identityFactor =
-                                    (IdentityFactor) bc2.SecondExpression.ExpressionNodes[0].Term.FirstFactor;
-                                if (currentAssignment.IdentityName == identityFactor.IdentityName)
+                                if (currentAssignment.IdentityName == secondIdentityFactor.IdentityName)
                                 {
                                     bc2.SecondExpression = currentAssignment.Expression;
                                 }
@@ -370,11 +374,10 @@ namespace PLC
                     {
                         var oc1 = (OddCondition) ifStatement.Condition;
                         OddCondition oc2 = new() {Expression = oc1.Expression};
-                        if (oc2.Expression.IsSingleIdentity)
+                        if (oc2.Expression.IsSingleIdentity &&
+                            oc2.Expression.ExpressionNodes.Count > 0 &&
+                            oc2.Expression.ExpressionNodes[0].Term?.FirstFactor is IdentityFactor identityFactor)
                         {
-                            IdentityFactor identityFactor =
-                                (IdentityFactor) oc2.Expression.ExpressionNodes[0].Term.FirstFactor;
-
                             for (int c = constantAssignments.Count - 1; c >= 0; c--)
                             {
                                 AssignmentStatement currentAssignment = constantAssignments[c];
@@ -481,10 +484,10 @@ namespace PLC
                 {
                     WriteStatement w = (WriteStatement) currentStatement;
                     //Console.WriteLine("Found WRITE statement");
-                    if (String.IsNullOrEmpty(w.Message) && w.Expression.IsSingleIdentity)
+                    if (String.IsNullOrEmpty(w.Message) && w.Expression.IsSingleIdentity &&
+                        w.Expression.ExpressionNodes.Count > 0 &&
+                        w.Expression.ExpressionNodes[0].Term?.FirstFactor is IdentityFactor identityFactor)
                     {
-                        IdentityFactor identityFactor =
-                            (IdentityFactor) w.Expression.ExpressionNodes[0].Term.FirstFactor;
                         if (identityFactor.IdentityName == targetIdentity)
                         {
                             AssignmentStatement a = assignments.First(x => x.IdentityName == targetIdentity);
@@ -506,11 +509,11 @@ namespace PLC
                     IfStatement ifStatement = (IfStatement) currentStatement;
                     if (ifStatement.Statement is WriteStatement)
                     {
-                        WriteStatement w = (WriteStatement) currentStatement;
-                        if (String.IsNullOrEmpty(w.Message) && w.Expression.IsSingleIdentity)
+                        WriteStatement w = (WriteStatement) ifStatement.Statement;
+                        if (String.IsNullOrEmpty(w.Message) && w.Expression.IsSingleIdentity &&
+                            w.Expression.ExpressionNodes.Count > 0 &&
+                            w.Expression.ExpressionNodes[0].Term?.FirstFactor is IdentityFactor identityFactor)
                         {
-                            IdentityFactor identityFactor =
-                                (IdentityFactor) w.Expression.ExpressionNodes[0].Term.FirstFactor;
                             if (identityFactor.IdentityName == targetIdentity)
                             {
                                 AssignmentStatement a = assignments.First(x => x.IdentityName == targetIdentity);
