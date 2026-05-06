@@ -108,6 +108,49 @@ namespace PLC
             return dw;
         }
 
+        Statement DeepCopyStatement(Statement original)
+        {
+            return original switch
+            {
+                AssignmentStatement a => new AssignmentStatement 
+                { 
+                    IdentityName = a.IdentityName, 
+                    Expression = DuplicateExpression(a.Expression) 
+                },
+                CallStatement c => new CallStatement { ProcedureName = c.ProcedureName },
+                ReadStatement r => new ReadStatement 
+                { 
+                    IdentityName = r.IdentityName, 
+                    Message = r.Message 
+                },
+                WriteStatement w => new WriteStatement 
+                { 
+                    Expression = w.Expression != null ? DuplicateExpression(w.Expression) : null,
+                    Message = w.Message 
+                },
+                CompoundStatement cs => new CompoundStatement 
+                { 
+                    Statements = cs.Statements.Select(s => DeepCopyStatement(s)).ToList() 
+                },
+                IfStatement iff => new IfStatement 
+                { 
+                    Condition = iff.Condition, 
+                    Statement = DeepCopyStatement(iff.Statement) 
+                },
+                WhileStatement ws => new WhileStatement 
+                { 
+                    Condition = ws.Condition, 
+                    Statement = DeepCopyStatement(ws.Statement) 
+                },
+                DoWhileStatement dw => new DoWhileStatement 
+                { 
+                    Condition = dw.Condition, 
+                    Statement = DeepCopyStatement(dw.Statement) 
+                },
+                _ => original
+            };
+        }
+
         Statement OptimizeCallStatement(CallStatement cs)
         {
             string name = cs.ProcedureName;
@@ -118,7 +161,8 @@ namespace PLC
                 if (result.Block.Constants.Count == 0 && result.Block.Variables.Count == 0 &&
                     !result.Block.Statement.CallsProcedure)
                 {
-                    return result.Block.Statement;
+                    // Deep copy to avoid shared references with the original procedure
+                    return DeepCopyStatement(result.Block.Statement);
                 }
 
                 result.CallCount++;
