@@ -543,17 +543,42 @@ namespace PLC
                 else if (currentStatement is DoWhileStatement)
                 {
                     DoWhileStatement dw = (DoWhileStatement) currentStatement;
-                    if (dw.Statement is CompoundStatement)
+                    if (dw.Statement != null)
                     {
-                        EliminateSingleAssignment(((CompoundStatement) dw.Statement).Statements, targetIdentity);
+                        if (dw.Statement is CompoundStatement cs)
+                        {
+                            EliminateSingleAssignment(cs.Statements, targetIdentity);
+                        }
+                        else
+                        {
+                            // Handle single statement in do-while
+                            var singleList = new List<Statement> { dw.Statement };
+                            EliminateSingleAssignment(singleList, targetIdentity);
+                        }
+                    }
+                }
+                else if (currentStatement is WhileStatement)
+                {
+                    WhileStatement ww = (WhileStatement) currentStatement;
+                    if (ww.Statement != null)
+                    {
+                        if (ww.Statement is CompoundStatement cs)
+                        {
+                            EliminateSingleAssignment(cs.Statements, targetIdentity);
+                        }
+                        else
+                        {
+                            // Handle single statement in while
+                            var singleList = new List<Statement> { ww.Statement };
+                            EliminateSingleAssignment(singleList, targetIdentity);
+                        }
                     }
                 }
                 else if (currentStatement is IfStatement)
                 {
                     IfStatement ifStatement = (IfStatement) currentStatement;
-                    if (ifStatement.Statement is WriteStatement)
+                    if (ifStatement.Statement is WriteStatement w)
                     {
-                        WriteStatement w = (WriteStatement) ifStatement.Statement;
                         if (String.IsNullOrEmpty(w.Message) && w.Expression.IsSingleIdentity &&
                             w.Expression.ExpressionNodes.Count > 0 &&
                             w.Expression.ExpressionNodes[0].Term?.FirstFactor is IdentityFactor identityFactor)
@@ -565,12 +590,35 @@ namespace PLC
                                 a.SkipGeneration = true;
                             }
                         }
-                    } else if (ifStatement.Statement is DoWhileStatement)
+                    }
+                    else if (ifStatement.Statement is DoWhileStatement dw)
                     {
-                        DoWhileStatement dw = (DoWhileStatement) ifStatement.Statement;
-                        if (dw.Statement is CompoundStatement)
+                        if (dw.Statement != null)
                         {
-                            EliminateSingleAssignment(((CompoundStatement) dw.Statement).Statements, targetIdentity);
+                            if (dw.Statement is CompoundStatement cs)
+                            {
+                                EliminateSingleAssignment(cs.Statements, targetIdentity);
+                            }
+                            else
+                            {
+                                var singleList = new List<Statement> { dw.Statement };
+                                EliminateSingleAssignment(singleList, targetIdentity);
+                            }
+                        }
+                    }
+                    else if (ifStatement.Statement is WhileStatement ww)
+                    {
+                        if (ww.Statement != null)
+                        {
+                            if (ww.Statement is CompoundStatement cs)
+                            {
+                                EliminateSingleAssignment(cs.Statements, targetIdentity);
+                            }
+                            else
+                            {
+                                var singleList = new List<Statement> { ww.Statement };
+                                EliminateSingleAssignment(singleList, targetIdentity);
+                            }
                         }
                     }
                     assignments.Clear();
