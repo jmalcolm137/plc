@@ -355,11 +355,13 @@ namespace PLC
                                     // Variables may have been changed after assignment
                                     // Unless there are only WRITE statements or empty statements in between
                                     keepAssignments = (ifStatement.Statement is EmptyStatement) || (ifStatement.Statement is WriteStatement);
+                                    break;
                                 }
                                 if (cond.Type == ConditionType.False)
                                 {
                                     statements[i] = new EmptyStatement();
                                     keepAssignments = true;
+                                    break;
                                 }
                             }
                         }
@@ -400,12 +402,14 @@ namespace PLC
                                             // Unless there are only WRITE statements or empty statements in between
                                             keepAssignments = (statements[i] is EmptyStatement) ||
                                                               (statements[i] is WriteStatement);
+                                            break;
                                         }
 
                                         if (cond.Type == ConditionType.False)
                                         {
                                             statements[i] = new EmptyStatement();
                                             keepAssignments = true;
+                                            break;
                                         }
                                     }
                                 }
