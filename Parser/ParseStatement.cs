@@ -127,7 +127,14 @@ namespace PLC
             whileStatement.Condition = bc;
             
             Expression stepExpression;
-            ExpressionNode identifierNode = new() {Term = indexVariableExpression.ExpressionNodes[0].Term};
+            // Create a deep copy of the Term to avoid shared references
+            var idFactor = (IdentityFactor)indexVariableExpression.ExpressionNodes[0].Term.TermNodes[0].Factor;
+            ExpressionNode identifierNode = new() { Term = new Term() };
+            identifierNode.Term.TermNodes.Add(new TermNode 
+            { 
+                IsDivision = false,
+                Factor = new IdentityFactor { IdentityName = idFactor.IdentityName }
+            });
             if (current.Text == "STEP")
             {
                 ExpectAndConsume("STEP");
