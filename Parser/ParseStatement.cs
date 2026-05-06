@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -128,12 +130,19 @@ namespace PLC
             
             Expression stepExpression;
             // Create a deep copy of the Term to avoid shared references
-            var idFactor = (IdentityFactor)indexVariableExpression.ExpressionNodes[0].Term.TermNodes[0].Factor;
+            var firstNode = indexVariableExpression.ExpressionNodes.FirstOrDefault();
+            var term = firstNode?.Term;
+            var firstTermNode = term?.TermNodes.FirstOrDefault();
+            var factor = firstTermNode?.Factor as IdentityFactor;
+            if (factor == null)
+            {
+                throw new Exception("Expected identity factor in FOR loop at line " + current.LineNumber);
+            }
             ExpressionNode identifierNode = new() { Term = new Term() };
             identifierNode.Term.TermNodes.Add(new TermNode 
             { 
                 IsDivision = false,
-                Factor = new IdentityFactor { IdentityName = idFactor.IdentityName }
+                Factor = new IdentityFactor { IdentityName = factor.IdentityName }
             });
             if (current.Text == "STEP")
             {
