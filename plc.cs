@@ -22,7 +22,7 @@ namespace PLC
             }
             else
             {
-                outFilename = Path.GetFileNameWithoutExtension(inFilename) + ".exe";
+                outFilename = Path.GetFileNameWithoutExtension(inFilename);
             }
             string extension = Path.GetExtension(outFilename);
             if (string.IsNullOrEmpty(extension))
@@ -54,20 +54,17 @@ namespace PLC
                     case ".cs":
                         generator = new CSharpGenerator(program);
                         break;
+		            case ".exe":
+			            generator = new CLRGenerator(program);
+			            break;
                     default:
-                        // For .exe/.dll outputs, use CLRGenerator directly
-                        generator = new CLRGenerator(program);
-                        generator.Compile(outFilename);
-                        return;
+                        throw new Exception("Unknown extension: " + extension);
                 }
-                foreach (string s in generator.Generate()) Console.WriteLine(s);
+                // Output the generated text to the screen unless we are generating an executable
+		        if (!(generator is CLRGenerator)) {
+                    foreach (string s in generator.Generate()) Console.WriteLine(s);
+		        }
                 generator.Compile(outFilename);
-                if (!(generator is CLRGenerator))
-                {
-                    outFilename = Path.GetFileNameWithoutExtension(inFilename) + ".exe";
-                    generator = new CLRGenerator(program);
-                    generator.Compile(outFilename);
-                }
             }
         }
         
