@@ -54,6 +54,9 @@ namespace PLC
                     case ".cs":
                         generator = new CSharpGenerator(program);
                         break;
+		            case ".s":
+			            generator = new RV32Generator(program);
+			            break;
 		            case ".exe":
 			            generator = new CLRGenerator(program);
 			            break;
