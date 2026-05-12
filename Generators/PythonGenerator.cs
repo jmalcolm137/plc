@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
@@ -53,6 +54,15 @@ namespace PLC
             foreach (Procedure method in Program.Block.Procedures)
             {
                 yield return "def " + method.Name + "():";
+                var locals = method.Block.Variables.Select(v => v.Name).ToHashSet();
+                var globals = Program.Block.Variables
+                    .Select(v => v.Name)
+                    .Where(n => !locals.Contains(n))
+                    .ToList();
+                if (globals.Any())
+                {
+                    yield return "    global " + string.Join(", ", globals);
+                }
                 foreach (string s in GenerateBlock(method.Block))
                 {
                     yield return s;
