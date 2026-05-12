@@ -7,7 +7,7 @@ This is Hello World in PLC
 
     ! "Hello World!".
 ## Mutli-target
-The compiler takes PL/0 source code as input and generates C, C#, Basic, PL/0, CIL, or .NET assemblies as output.
+The compiler takes PL/0 source code as input and generates C, C#, Basic, PL/0, Python, QBE, RISC-V RV32IM, CIL, or .NET assemblies as output.
 
 ### Example:
 The following PL/0 program ( first example on Wikipedia )
@@ -173,10 +173,11 @@ The following PL/0 program
         ? X;
         ! 3 - 9 + 6*X/2 + 12/3 + 7
     END.
-generates the following ( when targeting BASIC with the optimizer on )
+generates the following ( when targeting Python with the optimizer on )
 
-    10 INPUT X
-    20 PRINT X*3+5
+    X = int(input())
+    print(X*3+5)
+
 ### Constant Propagation
 The following PL/0 program
 
@@ -278,17 +279,15 @@ If the first `READ y` is replaced by the assignment `y := 2`, this results
 
 The value of `y` is now known through much of the program and it can be replaced by a constant. Values derived from `y`, like `squ` also become known. Reading a new value into 'y' stops it from propagating but 'squ' stays constant a while longer. `x` cannot be propagated as its value changes in the loop. That said, the `IF` statement before the loop has been eliminated.
 
-Replacing the remaining `READ y` results in the following version
+Replacing the remaining `READ y` in the original with `y := 3` results in the following version
 
-    VAR x, squ;
+    VAR x;
     
     BEGIN
         x := 1;
         DO
         BEGIN
-            squ := x*x;
-            WRITE squ;
-            squ := 4;
+            WRITE x*x;
             WRITE 4;
             WRITE 3;
             WRITE 4;
@@ -296,7 +295,8 @@ Replacing the remaining `READ y` results in the following version
         END
         WHILE x <= 10
     END.
-At this point, much more of the program has been converted to constants. Another `IF` statement has been eliminated as has the variable `y` itself. The variable `squ` cannot be removed it is tied to another variable ( `x` ) in the loop.
+
+At this point, much more of the program has been converted to constants. Another `IF` statement has been eliminated as has the variable `y` itself.
 
 ### Dead Code Elimination
 The following PL/0 input
