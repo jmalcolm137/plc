@@ -7,7 +7,7 @@ This is Hello World in PLC
 
     ! "Hello World!".
 ## Mutli-target
-The compiler takes PL/0 source code as input and generates C, C#, Basic, PL/0, CIL, or .NET assemblies as output.
+The compiler takes PL/0 source code as input and generates C, C#, Basic, PL/0, Python, QBE, RISC-V RV32IM, CIL, or .NET assemblies as output.
 
 ### Example:
 The following PL/0 program ( first example on Wikipedia )
