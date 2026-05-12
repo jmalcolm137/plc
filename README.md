@@ -173,10 +173,11 @@ The following PL/0 program
         ? X;
         ! 3 - 9 + 6*X/2 + 12/3 + 7
     END.
-generates the following ( when targeting BASIC with the optimizer on )
+generates the following ( when targeting Python with the optimizer on )
 
-    10 INPUT X
-    20 PRINT X*3+5
+    X = int(input())
+    print(X*3+5)
+
 ### Constant Propagation
 The following PL/0 program
 
