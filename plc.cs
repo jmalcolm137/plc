@@ -63,6 +63,9 @@ namespace PLC
 		            case ".s":
 			            generator = new RV32Generator(program);
 			            break;
+		            case ".py":
+			            generator = new PythonGenerator(program);
+			            break;
 		            case ".exe":
 			            generator = new CLRGenerator(program);
 			            break;
