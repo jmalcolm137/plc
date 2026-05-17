@@ -57,6 +57,9 @@ namespace PLC
 		            case ".qbe":
 			            generator = new QBEGenerator(program);
 			            break;
+		            case ".llvm":
+			            generator = new LLVMGenerator(program);
+			            break;
 		            case ".s":
 			            generator = new RV32Generator(program);
 			            break;
@@ -66,11 +69,11 @@ namespace PLC
                     default:
                         throw new Exception("Unknown extension: " + extension);
                 }
-                // Output the generated text to the screen unless we are generating an executable
-		        if (!(generator is CLRGenerator)) {
+		// Output the generatoed text to the screen unless we are generating an executable
+		if (!(generator is CLRGenerator)) {
                     foreach (string s in generator.Generate()) Console.WriteLine(s);
-		        }
-                generator.Compile(outFilename);
+		}
+		generator.Compile(outFilename);
             }
         }
         
